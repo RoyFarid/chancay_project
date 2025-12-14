@@ -50,12 +50,12 @@
         </div>
       </div>
 
-      <div v-else-if="activeTab === 'trucks'" class="text-center py-8">
-        <p class="text-gray-600">Vista de camiones</p>
+      <div v-else-if="activeTab === 'trucks'">
+        <TrucksList />
       </div>
 
-      <div v-else-if="activeTab === 'piles'" class="text-center py-8">
-        <p class="text-gray-600">Vista de pilas</p>
+      <div v-else-if="activeTab === 'piles'">
+        <YardStatus />
       </div>
     </div>
   </div>
@@ -63,6 +63,8 @@
 
 <script setup>
 import { ref } from 'vue'
+import TrucksList from './TrucksList.vue'
+import YardStatus from './YardStatus.vue'
 
 const activeTab = ref('orchestration')
 
