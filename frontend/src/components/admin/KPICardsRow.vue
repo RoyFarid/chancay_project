@@ -25,9 +25,9 @@
       icon-name="ship"
     />
     <KPICard
-      title="Alertas Activas"
-      value="2"
-      icon-name="alert"
+      title="Retenciones Aduanas"
+      value="5%"
+      icon-name="customs"
     />
     <KPICard
       title="Eficiencia"

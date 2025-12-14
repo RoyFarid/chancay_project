@@ -42,7 +42,18 @@
                 {{ alert.title }}
               </h3>
               <p class="text-sm text-gray-600">{{ alert.description }}</p>
-              <p class="text-xs text-gray-500 mt-2">{{ alert.time }}</p>
+              <div class="flex items-center justify-between mt-2">
+                <p class="text-xs text-gray-500">{{ alert.time }}</p>
+                <span
+                  v-if="alert.source"
+                  :class="[
+                    'text-xs font-mono opacity-75 px-2 py-0.5 rounded',
+                    alert.sourceClass
+                  ]"
+                >
+                  Fuente: {{ alert.source }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -70,6 +81,8 @@ const alerts = ref([
     severity: 'medium',
     time: 'Hace 15 minutos',
     icon: CloudIcon,
+    source: 'SENAMHI',
+    sourceClass: 'text-blue-600 bg-blue-50',
   },
   {
     id: 2,
@@ -78,6 +91,18 @@ const alerts = ref([
     severity: 'high',
     time: 'Hace 5 minutos',
     icon: ShieldExclamationIcon,
+    source: 'MTC/SUTRAN',
+    sourceClass: 'text-red-600 bg-red-50',
+  },
+  {
+    id: 3,
+    title: 'Congestión en Acceso Principal',
+    description: 'Tráfico moderado reportado en la vía de acceso. Tiempo de espera estimado: 15 min.',
+    severity: 'medium',
+    time: 'Hace 8 minutos',
+    icon: ShieldExclamationIcon,
+    source: 'Waze API',
+    sourceClass: 'text-cyan-600 bg-cyan-50',
   },
 ])
 </script>

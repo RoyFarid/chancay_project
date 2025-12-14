@@ -24,7 +24,7 @@
       </div>
 
       <!-- Bottom Row -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <!-- Vessel Tracking -->
         <div>
           <VesselTracking />
@@ -34,6 +34,11 @@
         <div>
           <ActiveAlerts />
         </div>
+      </div>
+
+      <!-- Predictive Chart Section -->
+      <div class="mb-6">
+        <PredictiveChart />
       </div>
     </main>
   </div>
@@ -46,4 +51,5 @@ import MapSection from '@/components/admin/MapSection.vue'
 import OrchestrationPanel from '@/components/admin/OrchestrationPanel.vue'
 import VesselTracking from '@/components/admin/VesselTracking.vue'
 import ActiveAlerts from '@/components/admin/ActiveAlerts.vue'
+import PredictiveChart from '@/components/admin/PredictiveChart.vue'
 </script>
