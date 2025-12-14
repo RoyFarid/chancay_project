@@ -41,16 +41,18 @@ const createBooking = async (req, res) => {
     console.log('Booking request received:', {
       slot_id,
       user_id,
+      user_id_type: typeof user_id,
       truck_plate,
       truck_plate_type: typeof truck_plate,
-      truck_plate_length: truck_plate?.length
+      truck_plate_length: truck_plate?.length,
+      body: req.body
     });
 
     // Validate required fields
-    if (!slot_id || !user_id || !truck_plate) {
+    if (!slot_id || user_id === undefined || user_id === null || !truck_plate) {
       console.error('Validation failed - missing fields:', {
         has_slot_id: !!slot_id,
-        has_user_id: !!user_id,
+        has_user_id: user_id !== undefined && user_id !== null,
         has_truck_plate: !!truck_plate
       });
       return res.status(400).json({
@@ -58,6 +60,36 @@ const createBooking = async (req, res) => {
         message: 'Missing required fields: slot_id, user_id, and truck_plate are required'
       });
     }
+
+    // Validate and convert user_id to integer
+    // Handle both string and number inputs
+    let cleanUserId;
+    if (typeof user_id === 'string') {
+      cleanUserId = parseInt(user_id, 10);
+    } else if (typeof user_id === 'number') {
+      cleanUserId = Math.floor(user_id);
+    } else {
+      cleanUserId = parseInt(String(user_id), 10);
+    }
+    
+    if (isNaN(cleanUserId) || cleanUserId <= 0) {
+      console.error('Validation failed - invalid user_id:', {
+        original: user_id,
+        type: typeof user_id,
+        parsed: cleanUserId
+      });
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user_id: must be a positive integer',
+        received: user_id,
+        type: typeof user_id
+      });
+    }
+    
+    console.log('User ID validated:', {
+      original: user_id,
+      cleaned: cleanUserId
+    });
 
     // Validate truck_plate format and length
     const cleanTruckPlate = String(truck_plate).trim();
@@ -136,8 +168,16 @@ const createBooking = async (req, res) => {
      * If this fails, the transaction will rollback, undoing the
      * reserved_count increment above.
      */
-    const cleanUserId = String(user_id).trim();
     const cleanSlotId = Number(slot_id);
+    
+    // Validate slot_id is a valid number
+    if (isNaN(cleanSlotId) || cleanSlotId <= 0) {
+      await connection.rollback();
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid slot_id: must be a positive integer'
+      });
+    }
     
     console.log('Inserting booking with:', {
       bookingId,

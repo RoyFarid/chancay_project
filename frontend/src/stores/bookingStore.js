@@ -66,9 +66,9 @@ export const useBookingStore = defineStore('booking', () => {
    * Create a new booking
    * @param {number} slotId - The ID of the time slot to book
    * @param {string} truckPlate - The truck license plate
-   * @param {string} userId - The user ID (optional, defaults to 'driver-1')
+   * @param {number} userId - The user ID (optional, defaults to 3)
    */
-  const createBooking = async (slotId, truckPlate, userId = 'driver-1') => {
+  const createBooking = async (slotId, truckPlate, userId = 3) => {
     loading.value = true
     error.value = null
     
@@ -93,10 +93,31 @@ export const useBookingStore = defineStore('booking', () => {
       throw new Error('La placa debe tener entre 3 y 20 caracteres')
     }
     
+    // Ensure userId is a valid number - force to 3 if invalid
+    let cleanUserId;
+    if (userId === undefined || userId === null) {
+      cleanUserId = 3;
+    } else if (typeof userId === 'string' && userId.includes('driver')) {
+      // Handle old 'driver-1' format - convert to 3
+      cleanUserId = 3;
+    } else {
+      cleanUserId = Number(userId);
+      if (isNaN(cleanUserId) || cleanUserId <= 0) {
+        cleanUserId = 3; // Default to 3 if invalid
+      }
+    }
+    
+    console.log('Creating booking with:', {
+      slotId: Number(slotId),
+      userId: cleanUserId,
+      originalUserId: userId,
+      truckPlate: cleanTruckPlate
+    })
+    
     try {
       const response = await apiClient.post('/bookings', {
         slot_id: Number(slotId),
-        user_id: String(userId),
+        user_id: cleanUserId, // Always send as number
         truck_plate: cleanTruckPlate,
       })
       
