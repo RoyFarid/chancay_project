@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 flex flex-col">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -21,11 +21,11 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 flex flex-col max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
       <!-- State B: Booking Confirmed (Digital Ticket) -->
-      <div v-if="bookingStore.hasBooking" class="max-w-2xl mx-auto">
+      <div v-if="bookingStore.hasBooking" class="flex-1 flex flex-col max-w-2xl mx-auto w-full">
         <!-- Digital Ticket Card (Boarding Pass Style) -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-blue-200">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-blue-200 flex flex-col flex-1">
           <!-- Header Section -->
           <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
             <div class="flex items-center justify-between mb-4">
@@ -67,9 +67,20 @@
           </div>
 
           <!-- Main Content -->
-          <div class="p-6">
+          <div class="p-6 flex-1 flex flex-col">
+            <!-- Travel Status Banner (Dynamic Travel Assistant) -->
+            <TravelStatusBanner
+              :status="travelStatus"
+              :reason="travelStatusReason"
+            />
+
+            <!-- Driver Map -->
+            <div class="mt-4 flex-1 min-h-[300px] rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+              <DriverMap :status="travelStatus" />
+            </div>
+
             <!-- Routing Instruction -->
-            <div class="mb-6 pb-6 border-b border-gray-200">
+            <div class="mb-6 pb-6 border-b border-gray-200 mt-4">
               <div class="flex items-start space-x-3">
                 <div class="p-2 bg-blue-50 rounded-lg">
                   <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,7 +167,39 @@
           </div>
 
           <!-- Footer -->
-          <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 space-y-2">
+            <!-- Demo Controls -->
+            <div v-if="travelStatus === 'GO'" class="grid grid-cols-2 gap-2">
+              <button
+                @click="simulateIncident"
+                class="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+              >
+                🧪 Simular HOLD
+              </button>
+              <button
+                @click="simulateReroute"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+              >
+                🗺️ Simular REROUTE
+              </button>
+            </div>
+            
+            <button
+              v-else-if="travelStatus === 'HOLD'"
+              @click="clearIncident"
+              class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+            >
+              ✅ Incidente Resuelto - Continuar
+            </button>
+            
+            <button
+              v-else-if="travelStatus === 'REROUTE'"
+              @click="acceptReroute"
+              class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+            >
+              ✅ Aceptar Nueva Ruta
+            </button>
+            
             <button
               @click="handleReset"
               class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors text-sm"
@@ -228,13 +271,19 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useBookingStore } from '@/stores/bookingStore'
 import SlotCard from '@/components/SlotCard.vue'
 import QRDisplay from '@/components/QRDisplay.vue'
+import TravelStatusBanner from '@/components/TravelStatusBanner.vue'
+import DriverMap from '@/components/driver/DriverMap.vue'
 
 const bookingStore = useBookingStore()
+
+// Travel Status State
+const travelStatus = ref('GO') // 'GO', 'HOLD', 'REROUTE'
+const travelStatusReason = ref(null)
 
 /**
  * Load available slots on component mount
@@ -269,10 +318,45 @@ const handleBookSlot = async (slotId, truckPlate) => {
 }
 
 /**
+ * Simulate incident (for demo purposes)
+ */
+const simulateIncident = () => {
+  travelStatus.value = 'HOLD'
+  travelStatusReason.value = 'Congestión Severa en Acceso Túnel'
+}
+
+/**
+ * Simulate reroute (for demo purposes)
+ */
+const simulateReroute = () => {
+  travelStatus.value = 'REROUTE'
+  travelStatusReason.value = 'Acceso Túnel Viaducto temporalmente cerrado. Use Ruta Alternativa por Carretera Panamericana'
+}
+
+/**
+ * Clear incident and resume travel
+ */
+const clearIncident = () => {
+  travelStatus.value = 'GO'
+  travelStatusReason.value = null
+}
+
+/**
+ * Accept reroute and continue
+ */
+const acceptReroute = () => {
+  travelStatus.value = 'GO'
+  travelStatusReason.value = null
+  // In a real app, this would update the route instructions
+}
+
+/**
  * Reset booking (for testing)
  */
 const handleReset = () => {
   bookingStore.clearBooking()
+  travelStatus.value = 'GO'
+  travelStatusReason.value = null
   loadSlots()
 }
 
