@@ -5,7 +5,7 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-2">
           Puerto de Chancay
         </h1>
-        <p class="text-gray-600">Sistema de Logística - Virtual Gate</p>
+        <p class="text-gray-600">Sistema de Logística - ChancayFlow</p>
       </div>
 
       <div class="space-y-4">

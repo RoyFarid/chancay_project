@@ -1,7 +1,7 @@
 {
   "name": "chancay-logistics-orchestrator",
   "version": "1.0.0",
-  "description": "Puerto de Chancay Logistics Orchestrator - Virtual Gate System",
+  "description": "Puerto de Chancay Logistics Orchestrator - ChancayFlow System",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

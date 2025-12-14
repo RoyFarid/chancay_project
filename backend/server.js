@@ -10,7 +10,7 @@ const server = app.listen(PORT, () => {
   console.log(`
   ╔══════════════════════════════════════════════════════════╗
   ║  Puerto de Chancay Logistics Orchestrator               ║
-  ║  Virtual Gate System - Backend API                      ║
+  ║  ChancayFlow System - Backend API                       ║
   ╠══════════════════════════════════════════════════════════╣
   ║  Server running on port ${PORT}                            ║
   ║  Environment: ${process.env.NODE_ENV || 'development'}                      ║
